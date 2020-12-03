@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Obvs",
+        "repositoryURL": "https://github.com/hkellaway/Obvs",
+        "state": {
+          "branch": "main",
+          "revision": "6714d2f43c15f3ead95739aaf4bcc4e10f2b158e",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
