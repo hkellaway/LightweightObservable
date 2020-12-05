@@ -1,6 +1,6 @@
 //
 //
-//  Disposable.swift
+//  Variable.swift
 //  Obvs
 //
 // Copyright (c) 2020 Harlan Kellaway
@@ -27,35 +27,45 @@
 
 import Foundation
 
-/// Executes a given closure on deallocation.
-public final class Disposable {
+/// Starts with an initial value and replays it or the latest element to new subscribers.
+public final class Variable<T>: Observable<T> {
 
     // MARK: - Properties
 
-    // MARK: Private properties
+    // MARK: Public properties
 
-    private let dispose: () -> Void
+    /// The current (writable) value of the variable.
+    override public var value: T {
+        get { _value }
+        set { _value = newValue }
+    }
+
+    // MARK: Private properties
+    
+    private var _value: T {
+        didSet {
+            notifyObserver(with: value, from: oldValue)
+        }
+    }
 
     // MARK: - Init/Deinit
 
-    /// Creates a new instance.
+    /// Initializes a new variable with the given value.
     ///
-    /// - Parameter dispose: The closure that is executed on deallocation.
-    public init(_ dispose: @escaping () -> Void) {
-        self.dispose = dispose
+    /// - Note: We keep the initializer to the super class `Observable` fileprivate in order to verify always having a value.
+    public init(_ value: T) {
+        _value = value
+
+        super.init()
     }
 
-    deinit {
-        dispose()
-    }
+    // MARK: - Instance methods
 
-    // MARK: - Instance functions
+    override public func subscribe(_ observer: @escaping Observer) -> Disposable {
+        // A variable should inform the observer with the initial value.
+        observer(_value, nil)
 
-
-    /// Adds the current instance to the provided `DisposeBag`.
-    /// - Parameter bag: Bag disposing of instance on `deinit`.
-    public func disposed(by bag: inout DisposeBag) {
-        bag.append(self)
+        return super.subscribe(observer)
     }
 
 }

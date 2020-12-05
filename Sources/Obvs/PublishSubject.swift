@@ -1,6 +1,6 @@
 //
 //
-//  Disposable.swift
+//  PublishSubject.swift
 //  Obvs
 //
 // Copyright (c) 2020 Harlan Kellaway
@@ -27,35 +27,45 @@
 
 import Foundation
 
-/// Executes a given closure on deallocation.
-public final class Disposable {
+/// Starts empty and only emits new elements to subscribers.
+public final class PublishSubject<T>: Observable<T> {
 
     // MARK: - Properties
 
+    // MARK: Public properties
+
+    /// The current (read-only) value of the observable.
+    override public var value: T? {
+        _value
+    }
+
     // MARK: Private properties
 
-    private let dispose: () -> Void
+    /// The storage for our computed property.
+    ///
+    /// - Note: Workaround for compiler error `Cannot override with a stored property 'value'`.
+    private var _value: T?
 
     // MARK: - Init/Deinit
 
-    /// Creates a new instance.
+    /// Initializes a new publish subject.
     ///
-    /// - Parameter dispose: The closure that is executed on deallocation.
-    public init(_ dispose: @escaping () -> Void) {
-        self.dispose = dispose
+    /// - Note: As we've made the initializer to the super class `Observable` fileprivate, we must override it here to allow public access.
+    override public init() {
+        super.init()
     }
 
-    deinit {
-        dispose()
-    }
+    // MARK: - Instance methods
 
-    // MARK: - Instance functions
+    // MARK: - methods instance methods
 
+    /// Updates the publish subject using the given value.
+    public func update(_ value: T) {
+        let oldValue = _value
+        _value = value
 
-    /// Adds the current instance to the provided `DisposeBag`.
-    /// - Parameter bag: Bag disposing of instance on `deinit`.
-    public func disposed(by bag: inout DisposeBag) {
-        bag.append(self)
+        // We inform the observer here instead of using `didSet` on `_value` to prevent unwrapping an optional (`_value` is nullable, as we're starting empty).
+        notifyObserver(with: value, from: oldValue)
     }
 
 }

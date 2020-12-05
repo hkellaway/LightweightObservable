@@ -8,8 +8,9 @@
 
 import Foundation
 
-/// Additional helper methods for an observable that that underlying type conforms to `Equatable`.
+/// Additional helper methods for an observable whose underlying type conforms to `Equatable`.
 public extension Observable where T: Equatable {
+
     // MARK: - Types
 
     /// The type for the filter closure.
@@ -19,9 +20,9 @@ public extension Observable where T: Equatable {
     ///   - oldValue: The previous (old) value.
     ///
     /// - Returns: `true` if the filter matches, otherwise `false`.
-    typealias Filter = (_ value: Value, _ oldValue: OldValue) -> Bool
+    typealias Filter = (_ value: T, _ oldValue: T?) -> Bool
 
-    // MARK: - Public methods
+    // MARK: - Instance methods
 
     /// Informs the given observer on changes to our `value`, only if the given filter matches.
     ///
@@ -41,7 +42,7 @@ public extension Observable where T: Equatable {
     func subscribe(filter: @escaping Filter, observer: @escaping Observer) -> Disposable {
         // As we're only calling the observer after the given `filter` succeeds, we need to save the last `newValue` that passed the filter.
         // Then we can pass this value as the correct `oldValue` on the next call to the given `observer`.
-        var filteredOldValue: OldValue = nil
+        var filteredOldValue: T? = nil
 
         return subscribe { newValue, oldValue in
             // For having a correct working filter we need to pass in the current `oldValue`.

@@ -1,6 +1,6 @@
 # Obvs :vertical_traffic_light:
 
-A simple implementation of an observable sequence that you can subscribe to.
+A simple implementation of an observable sequence that can be subscribed to.
 
 ## Credits
 

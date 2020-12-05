@@ -1,6 +1,6 @@
 //
 //
-//  Disposable.swift
+//  DisposeBag.swift
 //  Obvs
 //
 // Copyright (c) 2020 Harlan Kellaway
@@ -27,35 +27,5 @@
 
 import Foundation
 
-/// Executes a given closure on deallocation.
-public final class Disposable {
-
-    // MARK: - Properties
-
-    // MARK: Private properties
-
-    private let dispose: () -> Void
-
-    // MARK: - Init/Deinit
-
-    /// Creates a new instance.
-    ///
-    /// - Parameter dispose: The closure that is executed on deallocation.
-    public init(_ dispose: @escaping () -> Void) {
-        self.dispose = dispose
-    }
-
-    deinit {
-        dispose()
-    }
-
-    // MARK: - Instance functions
-
-
-    /// Adds the current instance to the provided `DisposeBag`.
-    /// - Parameter bag: Bag disposing of instance on `deinit`.
-    public func disposed(by bag: inout DisposeBag) {
-        bag.append(self)
-    }
-
-}
+/// Collection that  disposes added `Disposable`s on `deinit`.
+public typealias DisposeBag = [Disposable]
